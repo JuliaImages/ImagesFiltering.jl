@@ -93,12 +93,16 @@ function __init__()
     #     @eval using DummyAF
     # end
     pop!(LOAD_PATH)
-    @require AxisArrays="39de3d68-74b9-583c-8d2d-e117c070f3a9" begin
-        centered(ax::AxisArrays.Axis{name}) where name = AxisArrays.Axis{name}(centered(ax.val))
-        centered(a::AxisArrays.AxisArray) = AxisArrays.AxisArray(centered(a.data), centered.(AxisArrays.axes(a)))
-    end
-    @require ImageMetadata="bc367c6b-8a6b-528e-b4bd-a4b897500b49" begin
-        centered(a::ImageMetadata.ImageMeta) = ImageMetadata.ImageMeta(centered(ImageMetadata.arraydata(a)), ImageMetadata.properties(a))
+    if !isdefined(OffsetArrays, :centered)
+        # Compat for OffsetArrays v1.9
+        # https://github.com/JuliaArrays/OffsetArrays.jl/pull/242   
+        @require AxisArrays="39de3d68-74b9-583c-8d2d-e117c070f3a9" begin
+            centered(ax::AxisArrays.Axis{name}) where name = AxisArrays.Axis{name}(centered(ax.val))
+            centered(a::AxisArrays.AxisArray) = AxisArrays.AxisArray(centered(a.data), centered.(AxisArrays.axes(a)))
+        end
+        @require ImageMetadata="bc367c6b-8a6b-528e-b4bd-a4b897500b49" begin
+            centered(a::ImageMetadata.ImageMeta) = ImageMetadata.ImageMeta(centered(ImageMetadata.arraydata(a)), ImageMetadata.properties(a))
+        end
     end
 end
 
